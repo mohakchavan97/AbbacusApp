@@ -8,6 +8,9 @@ public class QuestionModel {
     private String option3;
     private String option4;
 
+    private boolean isAnswered;
+    private String answer;
+
     public QuestionModel(int questionId, String questionText, String option1, String option2, String option3, String option4) {
         this.questionId = questionId;
         this.questionText = questionText;
@@ -15,9 +18,27 @@ public class QuestionModel {
         this.option2 = option2;
         this.option3 = option3;
         this.option4 = option4;
+        isAnswered = false;
+        answer = option1;
     }
 
     public QuestionModel() {
+    }
+
+    public boolean isAnswered() {
+        return isAnswered;
+    }
+
+    public void setAnswered(boolean answered) {
+        isAnswered = answered;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 
     public int getQuestionId() {

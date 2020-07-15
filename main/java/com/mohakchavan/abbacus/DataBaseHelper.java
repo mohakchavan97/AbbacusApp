@@ -18,7 +18,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     private static String DB_NAME = "database.sqlite";
     private static int DB_VER = 1;
-    private final File DB_FILE;
+    private final String DB_FILE;
     private final Context mContext;
 
     private static String TABLE_NAME = "quiz";
@@ -32,9 +32,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public DataBaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VER);
-        DB_FILE = context.getDatabasePath(DB_NAME);
+        DB_FILE = context.getDatabasePath(DB_NAME).getPath();
         mContext = context;
-        openDataBase();
+//        openDataBase();
+        if (!checkExistenceOfDB()) {
+            copyDataBase();
+        }
     }
 
     @Override
@@ -54,27 +57,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
     public void copyDataBase() {
-        if (checkExistenceOfDB()) {
-            try {
-                InputStream inputStream = mContext.getResources().openRawResource(R.raw.database);
+
+        try {
+            InputStream inputStream = mContext.getResources().openRawResource(R.raw.database);
 //                InputStream inputStream = mContext.getAssets().open(DB_NAME);
-                OutputStream outputStream = new FileOutputStream(DB_FILE);
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = inputStream.read(buffer)) > 0) {
-                    outputStream.write(buffer, 0, length);
-                }
-                outputStream.flush();
-                outputStream.close();
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            OutputStream outputStream = new FileOutputStream(DB_FILE);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
             }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
     private boolean checkExistenceOfDB() {
-        return DB_FILE.exists();
+        File file = new File(DB_FILE);
+        if (file.exists()) return true;
+        File parent = new File(file.getParent());
+        if (!parent.exists()) {
+            parent.mkdirs();
+        }
+        return false;
     }
 
 
